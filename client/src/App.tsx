@@ -1,3 +1,4 @@
+
 import BasePage from '@components/BasePage'
 const App = () => {
   return (

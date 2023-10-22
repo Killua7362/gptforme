@@ -1,17 +1,26 @@
 
 import NavBar from './NavBar'
-import ChatBox from './ChatBox'
+import SideBar from './SideBar'
+import ChatPage from './ChatPage'
+import Welcome from './Welcome'
+import NotFound from './404'
+import { BrowserRouter, Routes, Route} from "react-router-dom";
+
 const BasePage = () => {
     return (
-        <div>
-            <NavBar/>
-            <div className='p-20 pb-8 h-screen w-screen flex flex-col justify-between items-center'>
-                <div>
-                    testing
+        <BrowserRouter>
+            <div>
+                <NavBar/>
+                <SideBar/>
+                <div className='p-20 pb-8 h-screen w-screen flex flex-col justify-between items-center'>
+                    <Routes>
+                        <Route path='/' element={<Welcome/>}/>
+                        <Route path='/chatpage/:chatid' element={<ChatPage/>}/>
+                        <Route path='*' element={<NotFound/>}/>
+                    </Routes>
                 </div>
-                <ChatBox/>
             </div>
-        </div>
+        </BrowserRouter>
       );
 }
 
