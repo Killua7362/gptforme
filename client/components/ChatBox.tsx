@@ -4,6 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import * as z from 'zod';
 import { KeyboardEvent, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { updateChatsBots, updateChatsUser } from '../redux_store/chats';
+import { useParams } from 'react-router-dom';
 
 const ChatSchema = z.object({
     chat:z.string().max(150),
@@ -11,8 +14,10 @@ const ChatSchema = z.object({
 
 type ChatInput = z.infer<typeof ChatSchema>;
 
-const ChatBox = ({onSubmittingChat}:{onSubmittingChat:CallableFunction}) => {
+const ChatBox = () => {
     const formRef = useRef<HTMLFormElement>(null)
+    const dispatch = useDispatch()
+    const params = useParams()
     const {
         register,
         handleSubmit,
@@ -28,13 +33,13 @@ const ChatBox = ({onSubmittingChat}:{onSubmittingChat:CallableFunction}) => {
             formRef?.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
           }
     }
-
     return (
         <div className='w-6/12 pt-4'>
             <form className='w-full'
             ref = {formRef} 
             onSubmit={handleSubmit((d)=>{
-                onSubmittingChat((prevState:Record<string,string>[])=>[...prevState,{'user':d.chat,'bot':'after adding'}])
+                dispatch(updateChatsUser(params.chatid,d.chat))
+                dispatch(updateChatsBots(params.chatid,'I am bot'))
                 resetField('chat')
             }
             )}
