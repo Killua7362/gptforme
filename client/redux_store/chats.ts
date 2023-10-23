@@ -52,6 +52,7 @@ export const updateName = (id:string,name:string)=>{
 const initialState = {
     chats:{}
 }
+
 interface ActionAdd{
     type:'ADD_TASK',
     payload:{
@@ -164,9 +165,7 @@ const taskReducer = (state:ChatsDataState=initialState,action:Action)=>{
 }
 
 export const rootReducer = combineReducers({task:taskReducer})
-
 const persistedReducer = persistReducer(persistConfig,rootReducer)
-
 const store = configureStore({reducer:persistedReducer})
 export type rootState = ReturnType<typeof store.getState>
 

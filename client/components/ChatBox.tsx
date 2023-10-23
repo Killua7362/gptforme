@@ -17,7 +17,7 @@ type ChatInput = z.infer<typeof ChatSchema>;
 const ChatBox = () => {
     const formRef = useRef<HTMLFormElement>(null)
     const dispatch = useDispatch()
-    const params = useParams()
+    const chatid = useParams().chatid
     const {
         register,
         handleSubmit,
@@ -38,8 +38,8 @@ const ChatBox = () => {
             <form className='w-full'
             ref = {formRef} 
             onSubmit={handleSubmit((d)=>{
-                dispatch(updateChatsUser(params.chatid,d.chat))
-                dispatch(updateChatsBots(params.chatid,'I am bot'))
+                dispatch(updateChatsUser(chatid!,d.chat))
+                dispatch(updateChatsBots(chatid!,'I am bot'))
                 resetField('chat')
             }
             )}

@@ -15,7 +15,7 @@ const SideBar = () => {
     const chats:ChatsType= useSelector(( state:rootState )=>state.task)
     const [createChat,setCreateChat] = useState(false)
     const navigate = useNavigate()
-
+    const [activeConversation,setActiveConversation] = useState<string>()
     useEffect(()=>{
       localStorage.setItem('expand',String(expand))
     },[expand])
@@ -27,27 +27,28 @@ const SideBar = () => {
     return (
         <div className={ `fixed z-50 h-full flex ${expand === 'true'?'w-64 bg-secondary shadow-lg shadow-white/10':''}`}>
           <div className="w-full">
-            <div className="flex justify-between items-center w-full shadow-lg shadow-white/10 p-2">
-            <button className="p-0 m-0 w-full" onClick={()=>setCreateChat(true)}>
-              <div className={ `w-full font-bold border-solid border-[0.5px] border-white rounded-md p-2 ${expand === 'true'?'':'hidden'}` }>
+            <div className="flex justify-around items-center w-full shadow-lg shadow-white/10 p-2">
+              <div 
+              onClick={()=>setCreateChat(true)}
+              className={ `w-10/12 text-sm text-start font-bold bg-[#2b2b2b] hover:bg-[#404040] rounded-md p-3 cursor-pointer ${expand === 'true'?'':'hidden'}` }>
                   New Conversation
               </div>
-                </button>
-                <CreateChat openModal={setCreateChat} state={createChat}/>
-              <button className="w-fit h-fit border-white ml-2 p-2" onClick={expandButtonHandler}>
-                <FontAwesomeIcon icon={faRightFromBracket} className="text-base"/>
+              <button className="w-fit h-fit border-none ml-2 p-2 bg-[#2b2b2b] hover:bg-[#404040]" >
+                <FontAwesomeIcon icon={faRightFromBracket} className="text-base" onClick={expandButtonHandler}/>
               </button>
+                <CreateChat openModal={setCreateChat} state={createChat}/>
             </div>
             <div className={ `w-full h-full ${expand === 'true'?"":"hidden"}` }>
-              <div className="flex flex-col gap-y-2 items-center">
+              <div className="flex flex-col gap-y-2 items-center mt-4">
                 {chats.chats && Object.keys(chats.chats).map((val,i:number)=>{
                   return(
                     <div
                     id={val}
                      onClick={()=>{
+                      setActiveConversation(val)
                       navigate(`/chatpage/${val}`,{replace:true})
                     }}
-                    className="w-10/12 h-12 text-center py-2 border-solid border-white border-[0.5px] rounded-xl"
+                    className={`w-11/12 h-12 text-center py-2 rounded-md ${val===activeConversation?"bg-[#404040]":" bg-[#2b2b2b] hover:bg-[#404040] cursor-pointer"}`}
                     >
                       {chats.chats[val].name}
                     </div>
