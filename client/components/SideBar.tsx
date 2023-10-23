@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from "react";
 import {  useSelector} from "react-redux";
 import CreateChat from './CreateChat'
-import {  useNavigate } from "react-router-dom";
+import {  createSearchParams, useNavigate } from "react-router-dom";
 import { rootState } from "redux_store/chats";
 
 export interface ChatsType extends rootState{
@@ -18,6 +18,7 @@ const SideBar = () => {
     const [activeConversation,setActiveConversation] = useState<string>()
     useEffect(()=>{
       localStorage.setItem('expand',String(expand))
+      return ()=>{localStorage.removeItem('expand')}
     },[expand])
 
     const expandButtonHandler = ()=>{
@@ -33,8 +34,8 @@ const SideBar = () => {
               className={ `w-10/12 text-sm text-start font-bold bg-[#2b2b2b] hover:bg-[#404040] rounded-md p-3 cursor-pointer ${expand === 'true'?'':'hidden'}` }>
                   New Conversation
               </div>
-              <button className="w-fit h-fit border-none ml-2 p-2 bg-[#2b2b2b] hover:bg-[#404040]" >
-                <FontAwesomeIcon icon={faRightFromBracket} className="text-base" onClick={expandButtonHandler}/>
+              <button className="w-fit h-fit border-none ml-2 p-2 bg-[#2b2b2b] hover:bg-[#404040]" onClick={expandButtonHandler} >
+                <FontAwesomeIcon icon={faRightFromBracket} className="text-base" />
               </button>
                 <CreateChat openModal={setCreateChat} state={createChat}/>
             </div>
@@ -46,7 +47,11 @@ const SideBar = () => {
                     id={val}
                      onClick={()=>{
                       setActiveConversation(val)
-                      navigate(`/chatpage/${val}`,{replace:true})
+                      navigate({pathname:'/chats',
+                      search:createSearchParams({
+                        id:val
+                      }).toString()
+                    })
                     }}
                     className={`w-11/12 h-12 text-center py-2 rounded-md ${val===activeConversation?"bg-[#404040]":" bg-[#2b2b2b] hover:bg-[#404040] cursor-pointer"}`}
                     >

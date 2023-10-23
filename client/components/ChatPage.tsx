@@ -1,14 +1,16 @@
 import { useSelector } from 'react-redux'
 import ChatBox from './ChatBox'
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ChatsDataState, rootState} from 'redux_store/chats'
 
 const ChatPage = () => {
     const [isMounted,setIsMounted] = useState(false)
     const c:ChatsDataState = useSelector((state:rootState)=>state.task)
-    const chatid = useParams().chatid
     const navigate = useNavigate()
+    const [params]= useSearchParams()
+
+    const chatid = params.get('id')
 
     useEffect(()=>{
         if(Object.keys(c.chats).includes(chatid!)){
