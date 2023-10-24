@@ -12,6 +12,8 @@ const ADD_TASK= "ADD_TASK"
 const UPDATE_NAME= "UPDATE_NAME"
 const UPDATE_CHATS_USER= "UPDATE_CHATS_USER"
 const UPDATE_CHATS_BOT= "UPDATE_CHATS_BOT"
+const UPDATE_CONTEXT= "UPDATE_CONTEXT"
+
 
 export const addChats = (id:string,name:string)=>{
     return{
@@ -21,6 +23,7 @@ export const addChats = (id:string,name:string)=>{
             chatData:{
                 name:name,
                 chats:{
+                    context:"",
                     user:[],
                     bot:[]
                 }
@@ -49,6 +52,13 @@ export const updateName = (id:string,name:string)=>{
     }
 }
 
+export const updateContext = (id:string,context:string)=>{
+    return{
+        type:UPDATE_CONTEXT,
+        payload:{id:id,context:context}
+    }
+}
+
 const initialState = {
     chats:{}
 }
@@ -60,6 +70,7 @@ interface ActionAdd{
         chatData:{
             name:string,
             chats:{
+                context:string,
                 user:string[],
                 bot:string[]
             }
@@ -83,16 +94,24 @@ interface ActionUpdateBotMessage{
 
 interface ActionUpdateUserMessage{
 type:"UPDATE_CHATS_USER",
-payload:{
-    id:string,
-    userMessage:string
-}
+    payload:{
+        id:string,
+        userMessage:string
+    }
 }
 
-type Action = ActionAdd | ActionUpdateBotMessage | ActionUpdateUserMessage | ActionUpdateName
+interface ActionUpdateContext{
+    type:"UPDATE_CONTEXT",
+    payload:{
+        id:string,
+        context:string
+    }
+}
+
+type Action = ActionAdd | ActionUpdateBotMessage | ActionUpdateUserMessage | ActionUpdateName | ActionUpdateContext
 
 export interface ChatsDataState{
-    chats:Record<string,Record<string,Record<string,string[]>>>
+    chats:Record<string,Record<string,Record<string,string[] | string>>>
 }
 
 
@@ -157,6 +176,21 @@ const taskReducer = (state:ChatsDataState=initialState,action:Action)=>{
                             ]
                         }
                     }
+                }
+            }
+        case UPDATE_CONTEXT:
+            return{
+                ...state,
+                chats:{
+                    ...state.chats,
+                    [action.payload.id]:{
+                        ...state.chats[action.payload.id],
+                        chats:{
+                            ...state.chats[action.payload.id].chats,
+                            context:action.payload.context
+                        }
+                    }
+                    
                 }
             }
         default:

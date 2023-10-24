@@ -1,12 +1,13 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faFolderPlus } from '@fortawesome/free-solid-svg-icons';
 import * as z from 'zod';
-import { KeyboardEvent, useRef } from 'react';
+import { KeyboardEvent, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateChatsBots, updateChatsUser } from '../redux_store/chats';
-import { useParams } from 'react-router-dom';
+import { updateChatsUser } from '../redux_store/chats';
+import { useSearchParams } from 'react-router-dom';
+import UploadFile from './UploadFile'
 
 const ChatSchema = z.object({
     chat:z.string().max(150),
@@ -14,10 +15,12 @@ const ChatSchema = z.object({
 
 type ChatInput = z.infer<typeof ChatSchema>;
 
-const ChatBox = () => {
+const ChatBox = (activate) => {
     const formRef = useRef<HTMLFormElement>(null)
     const dispatch = useDispatch()
-    const chatid = useParams().chatid
+    const [params]= useSearchParams()
+    const chatid = params.get('id')
+    const [openUpload,setOpenUpload] = useState(false)
     const {
         register,
         handleSubmit,
@@ -28,18 +31,22 @@ const ChatBox = () => {
     })
 
     const handleTextAreaSubmit = (e:KeyboardEvent<HTMLTextAreaElement>)=>{
-        if(e.key == 'Enter' && e.shiftKey == false) {
+        if(e.key == 'Enter' && e.shiftKey == false && activate.activate) {
             e.preventDefault();
             formRef?.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
           }
     }
     return (
-        <div className='w-6/12 pt-4'>
+         <div className='w-7/12 pt-4 flex'>
+            <div className='px-4 mx-2 my-4'>
+                <FontAwesomeIcon icon={faFolderPlus} className='text-2xl cursor-pointer' onClick={()=>setOpenUpload(true)}/>
+                <UploadFile state={openUpload} setState={setOpenUpload}/>
+            </div>
             <form className='w-full'
             ref = {formRef} 
             onSubmit={handleSubmit((d)=>{
                 dispatch(updateChatsUser(chatid!,d.chat))
-                dispatch(updateChatsBots(chatid!,'I am bot'))
+                // dispatch(updateChatsBots(chatid!,''))
                 resetField('chat')
             }
             )}
@@ -49,7 +56,7 @@ const ChatBox = () => {
                          className={`overflow-y-hidden h-14 w-full focus:outline-none rounded-xl  p-4 ${errors?.chat?.message && 'border-solid border-2 border-red-600'} `}
                          onKeyDown={handleTextAreaSubmit}
                          {...register('chat')} autoComplete='off'/>
-                        <button type='submit' className='px-4 mx-2'>
+                        <button type='submit' className='px-4 mx-2' disabled={!activate.activate}>
                             <FontAwesomeIcon icon={faArrowRight}/>
                         </button>
                     </div>

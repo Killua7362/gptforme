@@ -16,6 +16,7 @@ const SideBar = () => {
     const [createChat,setCreateChat] = useState(false)
     const navigate = useNavigate()
     const [activeConversation,setActiveConversation] = useState<string>()
+    
     useEffect(()=>{
       localStorage.setItem('expand',String(expand))
       return ()=>{localStorage.removeItem('expand')}
