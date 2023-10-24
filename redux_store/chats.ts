@@ -13,7 +13,7 @@ const UPDATE_NAME= "UPDATE_NAME"
 const UPDATE_CHATS_USER= "UPDATE_CHATS_USER"
 const UPDATE_CHATS_BOT= "UPDATE_CHATS_BOT"
 const UPDATE_CONTEXT= "UPDATE_CONTEXT"
-
+const DELETE_ALL = "DELETE_ALL"
 
 export const addChats = (id:string,name:string)=>{
     return{
@@ -31,6 +31,13 @@ export const addChats = (id:string,name:string)=>{
         },
     }
 }
+
+export const deleteAll = ()=>{
+    return{
+        type:DELETE_ALL
+    }
+}
+
 export const updateChatsUser = (id:string,userMessage:string)=>{
     return{
         type:UPDATE_CHATS_USER,
@@ -107,8 +114,10 @@ interface ActionUpdateContext{
         context:string
     }
 }
-
-type Action = ActionAdd | ActionUpdateBotMessage | ActionUpdateUserMessage | ActionUpdateName | ActionUpdateContext
+interface ActionDelete{
+    type:"DELETE_ALL",
+}
+type Action = ActionAdd | ActionUpdateBotMessage | ActionUpdateUserMessage | ActionUpdateName | ActionUpdateContext | ActionDelete
 
 export interface ChatsDataState{
     chats:Record<string,Record<string,Record<string,string[] | string>>>
@@ -193,6 +202,8 @@ const taskReducer = (state:ChatsDataState=initialState,action:Action)=>{
                     
                 }
             }
+        case DELETE_ALL:
+            return initialState
         default:
             return state
     }

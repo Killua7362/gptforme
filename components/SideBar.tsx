@@ -1,10 +1,10 @@
-import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faRightFromBracket,faBucket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from "react";
-import {  useSelector} from "react-redux";
+import {  useDispatch, useSelector} from "react-redux";
 import CreateChat from './CreateChat'
-import {  createSearchParams, useNavigate } from "react-router-dom";
-import { rootState } from "redux_store/chats";
+import {  createSearchParams, redirect, useNavigate } from "react-router-dom";
+import { deleteAll, rootState } from "../redux_store/chats";
 
 export interface ChatsType extends rootState{
   chats:Record<string,Record<string,string[]>>
@@ -16,7 +16,8 @@ const SideBar = () => {
     const [createChat,setCreateChat] = useState(false)
     const navigate = useNavigate()
     const [activeConversation,setActiveConversation] = useState<string>()
-    
+    const dispatch = useDispatch()
+
     useEffect(()=>{
       localStorage.setItem('expand',String(expand))
       return ()=>{localStorage.removeItem('expand')}
@@ -25,11 +26,17 @@ const SideBar = () => {
     const expandButtonHandler = ()=>{
       expand === 'false'?setExpand('true'):setExpand('false')      
     }    
-
+    const clearConvo = ()=>{
+      dispatch(deleteAll())
+      navigate('/',{replace:true})      
+    }    
     return (
         <div className={ `fixed z-50 h-full flex ${expand === 'true'?'w-64 bg-secondary shadow-lg shadow-white/10':''}`}>
           <div className="w-full">
             <div className="flex justify-around items-center w-full shadow-lg shadow-white/10 p-2">
+            <button className={`w-fit h-fit border-none mr-2 p-2 bg-[#2b2b2b] hover:bg-[#404040]  ${expand === 'true'?'':'hidden'} `} onClick={clearConvo} >
+                <FontAwesomeIcon icon={faBucket} className="text-base"/>
+              </button>
               <div 
               onClick={()=>setCreateChat(true)}
               className={ `w-10/12 text-sm text-start font-bold bg-[#2b2b2b] hover:bg-[#404040] rounded-md p-3 cursor-pointer ${expand === 'true'?'':'hidden'}` }>
