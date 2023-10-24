@@ -26,31 +26,34 @@ const ChatPage = () => {
         }
         return ()=>setIsMounted(false)
     },[c])
-    
+
     useEffect(()=>{
-        if(chatpageref.current!== null){
-            chatpageref.current.scrollTop = chatpageref.current.scrollHeight
+        if(c.chats[chatid!]?.chats?.user){
+            if(chatpageref.current!== null){
+                chatpageref.current.scrollTop = chatpageref.current.scrollHeight
+            }
+
+            if(c.chats[chatid!].chats.user.length !== c.chats[chatid!].chats.bot.length){
+                setActiveChatBox(false)
+            }else{
+                setActiveChatBox(true)
+            }
         }
-        if(c.chats[chatid!].chats.user.length !== c.chats[chatid!].chats.bot.length){
-            setActiveChatBox(false)
-        }else{
-            setActiveChatBox(true)
-        }
-    },[c.chats[chatid!].chats.user,chatpageref.current])
+    },[c,chatpageref.current])
+
     return (
         isMounted &&  <>
-            <div className='w-full flex flex-col space-y-4 justify-center items-center overflow-y-scroll' ref={chatpageref}>
+            <div className='w-full overflow-y-scroll space-y-6 ' ref={chatpageref}>
                     {
                         c.chats[chatid!].chats.user?.map((value,i)=>{
                             return (
-                                <>
+                                <div className='w-full flex flex-col justify-center items-center' key={`${i}-messages`}>
                                 <div
-                                key={`${i}user`}
                                 className='min-h-20 p-2 w-6/12 bg-[#2B2B2B]'
                                 >
                                     {value}
                                 </div>
-                                <div key={`${i}bot`} className='min-h-20 p-2 w-6/12'>
+                                <div className='min-h-20 p-2 w-6/12'>
                                     <div className={`${c.chats[chatid!].chats.bot[i] === undefined?"hidden":""}`}>
                                         {c.chats[chatid!].chats.bot[i]}
                                     </div>
@@ -61,7 +64,7 @@ const ChatPage = () => {
                                         </svg>
                                     </div>
                                 </div>
-                                </>
+                                </div>
                             )
                         })
                     }

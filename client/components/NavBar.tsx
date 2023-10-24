@@ -9,11 +9,12 @@ const NavBar = () => {
   const c:ChatsDataState = useSelector((state:rootState)=>state.task)
   useEffect(()=>{
     const chatid = params.get('id')
-    if(chatid !== null){
+    if(chatid !== null && c.chats[chatid!]){
       setTitle((c.chats[chatid].name).toString())
     }
     return ()=> setTitle('')
   },[params])
+
     return (
     <div className="fixed z-50 w-full h-14 bg-primary/20 shadow-md shadow-primary/70 flex justify-center items-center">
       <div className="text-white">

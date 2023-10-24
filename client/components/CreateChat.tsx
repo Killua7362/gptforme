@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import * as z from 'zod';
 import { addChats } from "../redux_store/chats";
 import { useDispatch } from "react-redux";
+import { createSearchParams, useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
     name:z.string().max(10)
@@ -17,6 +18,8 @@ interface FormHandler{
 
 const CreateChat = ({openModal,state}:{openModal:React.Dispatch<React.SetStateAction<boolean>>,state:boolean}) => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+
     const {
         register,
         handleSubmit,
@@ -40,6 +43,11 @@ const CreateChat = ({openModal,state}:{openModal:React.Dispatch<React.SetStateAc
     const newChatHandler = (d:FormHandler) => {
         const id = String(Date.now())
         dispatch(addChats(id,d.name))
+        navigate({pathname:'/chats',
+        search:createSearchParams({
+          id:id
+        }).toString()
+      })
     }
 
     return (

@@ -45,7 +45,7 @@ const SideBar = () => {
                 {chats.chats && Object.keys(chats.chats).map((val,i:number)=>{
                   return(
                     <div
-                    id={val}
+                    key={`${i}-names`}
                      onClick={()=>{
                       setActiveConversation(val)
                       navigate({pathname:'/chats',

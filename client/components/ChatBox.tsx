@@ -3,9 +3,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faFolderPlus } from '@fortawesome/free-solid-svg-icons';
 import * as z from 'zod';
-import { KeyboardEvent, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { updateChatsUser } from '../redux_store/chats';
+import { KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { ChatsDataState, rootState, updateChatsBots, updateChatsUser } from '../redux_store/chats';
 import { useSearchParams } from 'react-router-dom';
 import UploadFile from './UploadFile'
 
@@ -21,6 +21,8 @@ const ChatBox = (activate) => {
     const [params]= useSearchParams()
     const chatid = params.get('id')
     const [openUpload,setOpenUpload] = useState(false)
+    const c:ChatsDataState = useSelector((state:rootState)=>state.task)
+
     const {
         register,
         handleSubmit,
@@ -29,7 +31,6 @@ const ChatBox = (activate) => {
     } = useForm<ChatInput>({
         resolver:zodResolver(ChatSchema),
     })
-
     const handleTextAreaSubmit = (e:KeyboardEvent<HTMLTextAreaElement>)=>{
         if(e.key == 'Enter' && e.shiftKey == false && activate.activate) {
             e.preventDefault();
@@ -46,7 +47,24 @@ const ChatBox = (activate) => {
             ref = {formRef} 
             onSubmit={handleSubmit((d)=>{
                 dispatch(updateChatsUser(chatid!,d.chat))
-                // dispatch(updateChatsBots(chatid!,''))
+                const dataForGPT = {
+                    context:c.chats[chatid!].chats.context,
+                    user:c.chats[chatid!].chats.user,
+                    bot:c.chats[chatid!].chats.bot,
+                    question:d.chat
+                }
+                fetch('/api/home',{
+                    'method':'POST',
+                    headers:{
+                        'Content-Type':'application/json'
+                    },
+                    body:JSON.stringify(dataForGPT)
+                }).then(
+                    res=>res.json()
+                ).then(
+                    data =>{
+                        dispatch(updateChatsBots(chatid,data.result))}
+                )
                 resetField('chat')
             }
             )}
